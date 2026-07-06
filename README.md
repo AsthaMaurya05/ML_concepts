@@ -11,5 +11,5 @@ This repository contains simple machine learning examples in Python.
 - `random_forest.py` - random forest classification example
 - `knn.py` - k-nearest neighbors example
 
-## machine learning blog
- link - 
+## machine learning notes
+ link - https://asthamaurya05.github.io/ML_concepts/
