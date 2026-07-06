@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Machine Learning — Field Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f5f3ec;
+    --bg-alt: #ebe8dd;
+    --card: #ffffff;
+    --ink: #202b26;
+    --ink-soft: #4b5a52;
+    --line: #d9d4c4;
+    --forest: #3f6c51;
+    --forest-deep: #2a4a38;
+    --amber: #b8863b;
+    --amber-soft: #e8d9bd;
+    --radius: 3px;
+    --maxw: 760px;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--bg), var(--bg)) ,
+      repeating-linear-gradient(to bottom, transparent 0 39px, var(--line) 39px 40px);
+    background-blend-mode: normal;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{ color: var(--forest-deep); }
+
+  /* ---------- Layout shell ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns: 250px minmax(0,1fr);
+    max-width: 1180px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar{
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 40px 20px 40px 32px;
+    border-right: 1px solid var(--line);
+  }
+  .brand{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.35rem;
+    letter-spacing: -0.02px;
+    margin: 0 0 2px;
+  }
+  .brand em{
+    font-style: normal;
+    color: var(--forest);
+  }
+  .brand-sub{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
+    margin: 0 0 28px;
+  }
+
+  nav.toc{ list-style: none; margin:0; padding:0; }
+  nav.toc li{ margin: 0; }
+  nav.toc a{
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    text-decoration: none;
+    color: var(--ink-soft);
+    font-size: 0.86rem;
+    padding: 6px 8px 6px 4px;
+    border-left: 2px solid transparent;
+    transition: color .15s ease, border-color .15s ease, background .15s ease;
+  }
+  nav.toc a .tab-num{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--amber);
+    flex-shrink: 0;
+    width: 22px;
+  }
+  nav.toc a:hover{ color: var(--ink); background: var(--bg-alt); }
+  nav.toc a.active{
+    color: var(--forest-deep);
+    border-left-color: var(--forest);
+    background: var(--bg-alt);
+    font-weight: 600;
+  }
+
+  .sidebar-foot{
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--line);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  /* ---------- Main ---------- */
+  main{ padding: 56px 44px 120px; max-width: var(--maxw); }
+
+  header.hero{
+    margin-bottom: 56px;
+  }
+  header.hero .kicker{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--forest);
+    margin: 0 0 14px;
+  }
+  header.hero h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(2.1rem, 4.4vw, 3rem);
+    line-height: 1.06;
+    margin: 0 0 18px;
+    max-width: 12ch;
+  }
+  header.hero p{
+    max-width: 46ch;
+    color: var(--ink-soft);
+    font-size: 1.02rem;
+  }
+
+  section.note{
+    position: relative;
+    padding: 8px 0 8px 26px;
+    margin-bottom: 58px;
+    scroll-margin-top: 24px;
+    border-left: 1px solid var(--line);
+  }
+  section.note::before{
+    content: attr(data-tab);
+    position: absolute;
+    left: -1px;
+    top: 0;
+    transform: translateX(-50%);
+    background: var(--forest);
+    color: #fdfcf8;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    padding: 3px 7px;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  h2.note-title{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 1.55rem;
+    margin: 18px 0 8px;
+    color: var(--ink);
+  }
+  h3.sub{
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1.02rem;
+    margin: 22px 0 8px;
+    color: var(--forest-deep);
+  }
+  p{ margin: 10px 0; }
+  ul, ol{ margin: 8px 0; padding-left: 22px; }
+  li{ margin: 3px 0; }
+
+  .lede{ color: var(--ink-soft); font-size: 0.98rem; }
+
+  /* formula / code style block */
+  .formula{
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--amber);
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 0.92rem;
+    margin: 14px 0;
+    overflow-x: auto;
+  }
+  .formula .desc{
+    display:block;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-top: 6px;
+  }
+
+  /* two column grid for compare cards */
+  .pair{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 640px){ .pair{ grid-template-columns: 1fr; } }
+  .card{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+  .card h4{
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--forest-deep);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+  .card ul{ padding-left: 18px; }
+
+  /* pipeline flow */
+  .flow{
+    display:flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0;
+    margin: 20px 0;
+  }
+  .flow .step{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 9px 14px;
+    font-size: 0.85rem;
+    font-family: 'IBM Plex Mono', monospace;
+    white-space: nowrap;
+  }
+  .flow .arrow{
+    color: var(--amber);
+    padding: 0 8px;
+    font-size: 1rem;
+  }
+
+  /* table */
+  table{
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.88rem;
+    background: var(--card);
+  }
+  th, td{
+    border: 1px solid var(--line);
+    padding: 9px 12px;
+    text-align: left;
+  }
+  th{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--bg-alt);
+    color: var(--ink-soft);
+  }
+
+  /* confusion matrix */
+  .cm-wrap{ display:flex; gap: 24px; align-items:flex-start; flex-wrap: wrap; margin: 18px 0; }
+  .cm{
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+  }
+  .cm th, .cm td{
+    border: 1px solid var(--line);
+    padding: 14px 18px;
+    text-align: center;
+  }
+  .cm td.tp{ background: var(--forest); color:#fdfcf8; }
+  .cm td.tn{ background: #e4ede7; }
+  .cm td.fp{ background: var(--amber-soft); }
+  .cm td.fn{ background: var(--amber-soft); }
+  .cm-legend{ font-size: 0.85rem; color: var(--ink-soft); max-width: 30ch; }
+  .cm-legend .dot{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; }
+
+  /* bias variance bars */
+  .bv-row{ display:flex; align-items:center; gap: 10px; margin: 6px 0; font-size: 0.85rem; }
+  .bv-label{ width: 110px; font-family:'IBM Plex Mono', monospace; font-size: 0.75rem; }
+  .bv-bar{ flex:1; height: 10px; background: var(--bg-alt); border-radius: 6px; overflow:hidden; }
+  .bv-fill{ height: 100%; background: var(--forest); }
+
+  .callout{
+    background: var(--amber-soft);
+    border-left: 3px solid var(--amber);
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    margin: 14px 0;
+  }
+
+  footer.page-end{
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px dashed var(--line);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-soft);
+  }
+
+  /* mobile: collapse sidebar into top bar */
+  .mobile-toggle{ display:none; }
+  @media (max-width: 900px){
+    .shell{ grid-template-columns: 1fr; }
+    .sidebar{
+      position: relative;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--line);
+      padding: 20px 24px;
+    }
+    nav.toc{ display:none; }
+    nav.toc.open{ display:block; margin-top: 14px; }
+    .mobile-toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background: var(--forest);
+      color:#fdfcf8;
+      border:none;
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-family:'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      cursor:pointer;
+    }
+    main{ padding: 40px 22px 100px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="sidebar">
+    <p class="brand"><em>ML</em> Field Notes</p>
+    <p class="brand-sub">14 entries · study reference</p>
+    <button class="mobile-toggle" onclick="document.querySelector('nav.toc').classList.toggle('open')">☰ Contents</button>
+    <ul class="toc" style="list-style:none; padding:0;" id="toc"></ul>
+    <div class="sidebar-foot">
+      Compiled notes on supervised &amp; unsupervised learning, evaluation metrics, and core algorithms.
+    </div>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <p class="kicker">Notebook · Machine Learning</p>
+      <h1>Patterns learned from data, not written as rules.</h1>
+      <p>A working reference covering the supervised/unsupervised split, the standard ML pipeline, error metrics, and the core algorithms — Linear &amp; Logistic Regression, Decision Trees, Random Forest, KNN — plus overfitting and the bias–variance tradeoff.</p>
+    </header>
+
+    <section class="note" id="s01" data-tab="01" data-title="What is ML?">
+      <h2 class="note-title">What is Machine Learning?</h2>
+      <p>Machine Learning (ML) is a branch of Artificial Intelligence where a computer learns patterns from data instead of being explicitly programmed.</p>
+      <p class="lede">Instead of hand-writing a rule like:</p>
+      <div class="formula">IF Salary &gt; 50,000 → Loan = Approved</div>
+      <p>…we hand the machine data, and it learns that relationship on its own.</p>
+    </section>
+
+    <section class="note" id="s02" data-tab="02" data-title="Types of ML">
+      <h2 class="note-title">Types of Machine Learning</h2>
+      <p>ML splits into two main categories, depending on whether the training data comes with answers attached.</p>
+      <div class="pair">
+        <div class="card">
+          <h4>Supervised</h4>
+          <p class="lede">Inputs (X) paired with correct outputs (Y). The model learns the mapping between them.</p>
+          <ul>
+            <li>House price prediction</li>
+            <li>Spam email detection</li>
+            <li>Disease prediction</li>
+            <li>Student marks prediction</li>
+          </ul>
+          <p class="lede"><strong>Goal:</strong> predict the correct output for unseen data.</p>
+          <p class="lede"><strong>Algorithms:</strong> Linear Regression, Logistic Regression, Decision Tree, Random Forest, KNN.</p>
+        </div>
+        <div class="card">
+          <h4>Unsupervised</h4>
+          <p class="lede">Only input data — no labels. The model looks for hidden structure on its own.</p>
+          <ul>
+            <li>Customer segmentation</li>
+            <li>Fraud pattern discovery</li>
+            <li>Recommendation systems</li>
+          </ul>
+          <p class="lede"><strong>Algorithms:</strong> K-Means, DBSCAN, Hierarchical Clustering.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="note" id="s03" data-tab="03" data-title="ML Pipeline">
+      <h2 class="note-title">The ML Pipeline</h2>
+      <p>Nearly every supervised ML project follows the same sequence — only the model in the middle changes.</p>
+      <div class="flow">
+        <span class="step">Collect Data</span><span class="arrow">→</span>
+        <span class="step">Clean Data</span><span class="arrow">→</span>
+        <span class="step">EDA</span><span class="arrow">→</span>
+        <span class="step">Feature Eng.</span><span class="arrow">→</span>
+        <span class="step">Train/Test Split</span><span class="arrow">→</span>
+        <span class="step">Choose Model</span><span class="arrow">→</span>
+        <span class="step">Train</span><span class="arrow">→</span>
+        <span class="step">Predict</span><span class="arrow">→</span>
+        <span class="step">Evaluate</span><span class="arrow">→</span>
+        <span class="step">Improve</span>
+      </div>
+      <p class="callout">Only the model changes — Linear Regression, Decision Tree, Random Forest, etc. Everything else in the pipeline stays nearly the same.</p>
+    </section>
+
+    <section class="note" id="s04" data-tab="04" data-title="Train-Test Split">
+      <h2 class="note-title">Train–Test Split</h2>
+      <p>The dataset is divided into two parts so we can measure performance on data the model hasn't seen.</p>
+      <div class="pair">
+        <div class="card">
+          <h4>Training Data</h4>
+          <p class="lede">Used to train the model. Usually 70–80% of the data.</p>
+        </div>
+        <div class="card">
+          <h4>Testing Data</h4>
+          <p class="lede">Used to evaluate performance on unseen data. Usually 20–30%.</p>
+        </div>
+      </div>
+      <div class="formula">1000 samples → 800 training / 200 testing</div>
+    </section>
+
+    <section class="note" id="s05" data-tab="05" data-title="Regression vs Classification">
+      <h2 class="note-title">Regression vs Classification</h2>
+      <div class="pair">
+        <div class="card">
+          <h4>Regression</h4>
+          <p class="lede">Output is a continuous value.</p>
+          <ul><li>House price</li><li>Temperature</li><li>Stock price</li></ul>
+          <p class="lede"><strong>Algorithm:</strong> Linear Regression</p>
+        </div>
+        <div class="card">
+          <h4>Classification</h4>
+          <p class="lede">Output belongs to a category.</p>
+          <ul><li>Spam / Not spam</li><li>Cancer / No cancer</li><li>Pass / Fail</li></ul>
+          <p class="lede"><strong>Algorithms:</strong> Logistic Regression, Decision Tree, Random Forest, KNN</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="note" id="s06" data-tab="06" data-title="Linear Regression">
+      <h2 class="note-title">Linear Regression</h2>
+      <p>A supervised algorithm for predicting continuous values. It finds the best-fit straight line between input and output.</p>
+      <div class="formula">
+        y = mx + c
+        <span class="desc">y → predicted value · m → slope · x → input feature · c → intercept</span>
+      </div>
+      <div class="flow">
+        <span class="step">Area of House</span><span class="arrow">→</span>
+        <span class="step">Linear Regression</span><span class="arrow">→</span>
+        <span class="step">Predicted Price</span>
+      </div>
+    </section>
+
+    <section class="note" id="s07" data-tab="07" data-title="Error Metrics">
+      <h2 class="note-title">Error Metrics (Regression)</h2>
+      <p>After prediction, we measure how wrong the model is. Error = Actual − Predicted.</p>
+
+      <h3 class="sub">Mean Absolute Error (MAE)</h3>
+      <div class="formula">MAE = (1/n) · Σ |y − ŷ|</div>
+      <div class="pair">
+        <div class="card"><h4>Pros</h4><ul><li>Easy to understand</li><li>Less affected by outliers</li></ul></div>
+        <div class="card"><h4>Cons</h4><ul><li>Doesn't penalize large errors much</li></ul></div>
+      </div>
+
+      <h3 class="sub">Mean Squared Error (MSE)</h3>
+      <div class="formula">MSE = (1/n) · Σ (y − ŷ)²</div>
+      <div class="pair">
+        <div class="card"><h4>Pros</h4><ul><li>Penalizes large mistakes</li></ul></div>
+        <div class="card"><h4>Cons</h4><ul><li>Unit becomes squared</li><li>Sensitive to outliers</li></ul></div>
+      </div>
+
+      <h3 class="sub">Root Mean Squared Error (RMSE)</h3>
+      <div class="formula">RMSE = √MSE</div>
+      <div class="pair">
+        <div class="card"><h4>Pros</h4><ul><li>Same unit as target variable</li><li>Easier to interpret</li></ul></div>
+        <div class="card"><h4>Cons</h4><ul><li>Still sensitive to outliers</li></ul></div>
+      </div>
+    </section>
+
+    <section class="note" id="s08" data-tab="08" data-title="Logistic Regression">
+      <h2 class="note-title">Logistic Regression</h2>
+      <p>Despite the name, this is used for <strong>classification</strong>, not regression. It predicts the probability that an input belongs to a class, using the sigmoid function.</p>
+      <div class="formula">
+        P = 1 / (1 + e^−z)
+        <span class="desc">Output is squeezed into the range 0 → 1</span>
+      </div>
+      <div class="flow">
+        <span class="step">Probability = 0.92</span><span class="arrow">→</span>
+        <span class="step">Cancer</span>
+      </div>
+    </section>
+
+    <section class="note" id="s09" data-tab="09" data-title="Confusion Matrix">
+      <h2 class="note-title">Confusion Matrix &amp; Classification Metrics</h2>
+      <p>A confusion matrix compares predicted values against actual values.</p>
+
+      <div class="cm-wrap">
+        <table class="cm">
+          <tr><th></th><th>Predicted Pos.</th><th>Predicted Neg.</th></tr>
+          <tr><th>Actual Pos.</th><td class="tp">TP</td><td class="fn">FN</td></tr>
+          <tr><th>Actual Neg.</th><td class="fp">FP</td><td class="tn">TN</td></tr>
+        </table>
+        <div class="cm-legend">
+          <p><strong>FP</strong> — Type-I error. e.g. a healthy person predicted sick.</p>
+          <p><strong>FN</strong> — Type-II error. e.g. a cancer patient predicted healthy.</p>
+        </div>
+      </div>
+
+      <h3 class="sub">Accuracy</h3>
+      <div class="formula">Accuracy = (TP + TN) / (TP + TN + FP + FN)</div>
+      <p class="lede">Best when classes are balanced.</p>
+
+      <h3 class="sub">Precision</h3>
+      <div class="formula">Precision = TP / (TP + FP)</div>
+      <p class="lede">Of everything predicted positive, how many actually were? Matters most when false positives are costly — e.g. spam detection.</p>
+
+      <h3 class="sub">Recall</h3>
+      <div class="formula">Recall = TP / (TP + FN)</div>
+      <p class="lede">Of all actual positives, how many did we catch? Critical in medical diagnosis — missing a disease can be dangerous.</p>
+
+      <h3 class="sub">F1 Score</h3>
+      <div class="formula">F1 = 2 · (Precision · Recall) / (Precision + Recall)</div>
+      <p class="lede">Harmonic mean of precision and recall — used when both matter equally.</p>
+    </section>
+
+    <section class="note" id="s10" data-tab="10" data-title="Decision Tree">
+      <h2 class="note-title">Decision Tree</h2>
+      <p>A supervised algorithm that predicts by asking a series of questions.</p>
+      <div class="flow">
+        <span class="step">Age &gt; 18?</span><span class="arrow">→</span>
+        <span class="step">Income &gt; 50K?</span><span class="arrow">→</span>
+        <span class="step">Loan Approved</span>
+      </div>
+
+      <h3 class="sub">Parts of a tree</h3>
+      <ul>
+        <li><strong>Root node</strong> — the first, most important split.</li>
+        <li><strong>Decision node</strong> — intermediate questions.</li>
+        <li><strong>Leaf node</strong> — the final prediction, no further splitting.</li>
+      </ul>
+
+      <h3 class="sub">Entropy</h3>
+      <div class="formula">
+        Entropy(S) = −Σ pᵢ · log₂(pᵢ)
+        <span class="desc">0 → pure · 1 → completely mixed. Lower is better.</span>
+      </div>
+
+      <h3 class="sub">Information Gain</h3>
+      <p>Tells us how much uncertainty decreases after a split.</p>
+      <div class="formula">Information Gain = Entropy(Parent) − Weighted Entropy(Children)</div>
+      <p class="lede">The split with the highest information gain is chosen next.</p>
+
+      <h3 class="sub">Gini Index</h3>
+      <div class="formula">Gini = 1 − Σ pᵢ²</div>
+      <p class="lede">Trees typically split using either Gini Index or Entropy.</p>
+
+      <h3 class="sub">Algorithm, step by step</h3>
+      <div class="flow">
+        <span class="step">Calc. Entropy</span><span class="arrow">→</span>
+        <span class="step">Calc. Info Gain</span><span class="arrow">→</span>
+        <span class="step">Pick Best Split</span><span class="arrow">→</span>
+        <span class="step">Create Root</span><span class="arrow">→</span>
+        <span class="step">Repeat per Branch</span><span class="arrow">→</span>
+        <span class="step">Stop when Pure</span>
+      </div>
+
+      <div class="callout">Limitation: a single tree can memorize training data, causing overfitting. Fix: Random Forest.</div>
+    </section>
+
+    <section class="note" id="s11" data-tab="11" data-title="Random Forest">
+      <h2 class="note-title">Random Forest</h2>
+      <p>An ensemble method that combines many Decision Trees, each trained on a different random sample of the data.</p>
+      <div class="pair">
+        <div class="card">
+          <h4>Classification</h4>
+          <p class="lede">Final prediction by majority vote across trees.</p>
+        </div>
+        <div class="card">
+          <h4>Regression</h4>
+          <p class="lede">Final prediction by averaging across trees.</p>
+        </div>
+      </div>
+      <div class="pair">
+        <div class="card"><h4>Advantages</h4><ul><li>Higher accuracy</li><li>Less overfitting</li><li>More robust</li></ul></div>
+        <div class="card"><h4>Disadvantages</h4><ul><li>Slower</li><li>Harder to interpret</li></ul></div>
+      </div>
+    </section>
+
+    <section class="note" id="s12" data-tab="12" data-title="KNN">
+      <h2 class="note-title">K-Nearest Neighbors (KNN)</h2>
+      <p>Predicts based on the nearest data points — usually measured with Euclidean distance.</p>
+      <div class="formula">Distance = √[(x₂ − x₁)² + (y₂ − y₁)²]</div>
+      <div class="flow">
+        <span class="step">New Student</span><span class="arrow">→</span>
+        <span class="step">Find 5 Nearest</span><span class="arrow">→</span>
+        <span class="step">Majority Class</span><span class="arrow">→</span>
+        <span class="step">Prediction</span>
+      </div>
+      <h3 class="sub">Choosing K</h3>
+      <div class="pair">
+        <div class="card"><h4>Small K</h4><p class="lede">Sensitive to noise.</p></div>
+        <div class="card"><h4>Large K</h4><p class="lede">Smoother predictions, may ignore local patterns.</p></div>
+      </div>
+    </section>
+
+    <section class="note" id="s13" data-tab="13" data-title="Fit & Bias-Variance">
+      <h2 class="note-title">Overfitting, Underfitting &amp; Bias–Variance</h2>
+
+      <h3 class="sub">Overfitting</h3>
+      <p class="lede">The model learns training data too well, including noise.</p>
+      <div class="bv-row"><span class="bv-label">Train Acc.</span><div class="bv-bar"><div class="bv-fill" style="width:92%"></div></div></div>
+      <div class="bv-row"><span class="bv-label">Test Acc.</span><div class="bv-bar"><div class="bv-fill" style="width:38%"></div></div></div>
+      <p class="lede"><strong>Fixes:</strong> more data, regularization, Random Forest, pruning, cross-validation.</p>
+
+      <h3 class="sub">Underfitting</h3>
+      <p class="lede">The model is too simple and fails to learn patterns.</p>
+      <div class="bv-row"><span class="bv-label">Train Acc.</span><div class="bv-bar"><div class="bv-fill" style="width:35%"></div></div></div>
+      <div class="bv-row"><span class="bv-label">Test Acc.</span><div class="bv-bar"><div class="bv-fill" style="width:30%"></div></div></div>
+      <p class="lede"><strong>Fixes:</strong> better features, a more complex model, more training.</p>
+
+      <h3 class="sub">Good fit</h3>
+      <div class="bv-row"><span class="bv-label">Train Acc.</span><div class="bv-bar"><div class="bv-fill" style="width:88%"></div></div></div>
+      <div class="bv-row"><span class="bv-label">Test Acc.</span><div class="bv-bar"><div class="bv-fill" style="width:85%"></div></div></div>
+      <p class="lede">Goal: low training error <em>and</em> low testing error.</p>
+
+      <h3 class="sub">Bias vs Variance</h3>
+      <p><strong>Bias</strong> — error from overly simple assumptions. High bias misses patterns → underfitting.</p>
+      <p><strong>Variance</strong> — error from being too sensitive to training data. High variance memorizes noise → overfitting.</p>
+      <table>
+        <tr><th>Model</th><th>Bias</th><th>Variance</th></tr>
+        <tr><td>Underfitting</td><td>High</td><td>Low</td></tr>
+        <tr><td>Overfitting</td><td>Low</td><td>High</td></tr>
+        <tr><td>Good model</td><td>Moderate/Low</td><td>Moderate/Low</td></tr>
+      </table>
+    </section>
+
+    <section class="note" id="s14" data-tab="14" data-title="Quick Revision">
+      <h2 class="note-title">Quick Revision Table</h2>
+      <table>
+        <tr><th>Algorithm</th><th>Learning Type</th><th>Problem Type</th><th>Output</th></tr>
+        <tr><td>Linear Regression</td><td>Supervised</td><td>Regression</td><td>Continuous value</td></tr>
+        <tr><td>Logistic Regression</td><td>Supervised</td><td>Classification</td><td>Class</td></tr>
+        <tr><td>Decision Tree</td><td>Supervised</td><td>Regression &amp; Classification</td><td>Class / Value</td></tr>
+        <tr><td>Random Forest</td><td>Supervised</td><td>Regression &amp; Classification</td><td>Class / Value</td></tr>
+        <tr><td>KNN</td><td>Supervised</td><td>Classification (+ regression variant)</td><td>Class</td></tr>
+      </table>
+
+      <footer class="page-end">Machine Learning Field Notes · compiled reference for study &amp; revision</footer>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Build TOC from sections
+  const sections = document.querySelectorAll('section.note');
+  const tocList = document.getElementById('toc');
+  sections.forEach(sec => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '#' + sec.id;
+    a.innerHTML = '<span class="tab-num">' + sec.dataset.tab + '</span>' + sec.dataset.title;
+    a.dataset.target = sec.id;
+    li.appendChild(a);
+    tocList.appendChild(li);
+  });
+
+  // Active link highlighting via IntersectionObserver
+  const links = document.querySelectorAll('#toc a');
+  const map = {};
+  links.forEach(l => map[l.dataset.target] = l);
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const link = map[entry.target.id];
+      if (!link) return;
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(sec => observer.observe(sec));
+</script>
+</body>
+</html>
