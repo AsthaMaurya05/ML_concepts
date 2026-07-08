@@ -303,6 +303,27 @@
   .bv-bar{ flex:1; height: 10px; background: var(--bg-alt); border-radius: 6px; overflow:hidden; }
   .bv-fill{ height: 100%; background: var(--forest); }
 
+  /* SVM margin diagram */
+  .svm-diagram{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin: 16px 0;
+  }
+
+  /* naive bayes prob chips */
+  .prob-chip{
+    display:inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    padding: 3px 9px;
+    border-radius: 12px;
+    margin: 2px 4px 2px 0;
+  }
+
   .callout{
     background: var(--amber-soft);
     border-left: 3px solid var(--amber);
@@ -360,7 +381,7 @@
 <div class="shell">
   <aside class="sidebar">
     <p class="brand"><em>ML</em> Field Notes</p>
-    <p class="brand-sub">14 entries · study reference</p>
+    <p class="brand-sub">16 entries · study reference</p>
     <button class="mobile-toggle" onclick="document.querySelector('nav.toc').classList.toggle('open')">☰ Contents</button>
     <ul class="toc" style="list-style:none; padding:0;" id="toc"></ul>
     <div class="sidebar-foot">
@@ -372,7 +393,7 @@
     <header class="hero">
       <p class="kicker">Notebook · Machine Learning</p>
       <h1>Patterns learned from data, not written as rules.</h1>
-      <p>A working reference covering the supervised/unsupervised split, the standard ML pipeline, error metrics, and the core algorithms — Linear &amp; Logistic Regression, Decision Trees, Random Forest, KNN — plus overfitting and the bias–variance tradeoff.</p>
+      <p>A working reference covering the supervised/unsupervised split, the standard ML pipeline, error metrics, and the core algorithms — Linear &amp; Logistic Regression, Decision Trees, Random Forest, KNN, SVM, and Naive Bayes — plus overfitting and the bias–variance tradeoff.</p>
     </header>
 
     <section class="note" id="s01" data-tab="01" data-title="What is ML?">
@@ -397,7 +418,7 @@
             <li>Student marks prediction</li>
           </ul>
           <p class="lede"><strong>Goal:</strong> predict the correct output for unseen data.</p>
-          <p class="lede"><strong>Algorithms:</strong> Linear Regression, Logistic Regression, Decision Tree, Random Forest, KNN.</p>
+          <p class="lede"><strong>Algorithms:</strong> Linear Regression, Logistic Regression, Decision Tree, Random Forest, KNN, SVM, Naive Bayes.</p>
         </div>
         <div class="card">
           <h4>Unsupervised</h4>
@@ -459,7 +480,7 @@
           <h4>Classification</h4>
           <p class="lede">Output belongs to a category.</p>
           <ul><li>Spam / Not spam</li><li>Cancer / No cancer</li><li>Pass / Fail</li></ul>
-          <p class="lede"><strong>Algorithms:</strong> Logistic Regression, Decision Tree, Random Forest, KNN</p>
+          <p class="lede"><strong>Algorithms:</strong> Logistic Regression, Decision Tree, Random Forest, KNN, SVM, Naive Bayes</p>
         </div>
       </div>
     </section>
@@ -630,7 +651,83 @@
       </div>
     </section>
 
-    <section class="note" id="s13" data-tab="13" data-title="Fit & Bias-Variance">
+    <section class="note" id="s13" data-tab="13" data-title="SVM">
+      <h2 class="note-title">Support Vector Machine (SVM)</h2>
+      <p>A supervised algorithm that finds the best boundary (a <strong>hyperplane</strong>) separating classes — "best" meaning the one with the widest possible margin to the nearest points of each class.</p>
+
+      <div class="svm-diagram">
+        <svg viewBox="0 0 400 200" width="100%" height="180" xmlns="http://www.w3.org/2000/svg">
+          <line x1="40" y1="160" x2="360" y2="40" stroke="#3f6c51" stroke-width="2"/>
+          <line x1="20" y1="150" x2="340" y2="30" stroke="#b8863b" stroke-width="1" stroke-dasharray="4 4"/>
+          <line x1="60" y1="170" x2="380" y2="50" stroke="#b8863b" stroke-width="1" stroke-dasharray="4 4"/>
+          <circle cx="90" cy="120" r="6" fill="#3f6c51"/>
+          <circle cx="130" cy="150" r="6" fill="#3f6c51"/>
+          <circle cx="160" cy="100" r="6" fill="#3f6c51"/>
+          <circle cx="70" cy="90" r="6" fill="#3f6c51"/>
+          <circle cx="230" cy="90" r="6" fill="#b8863b"/>
+          <circle cx="270" cy="60" r="6" fill="#b8863b"/>
+          <circle cx="300" cy="110" r="6" fill="#b8863b"/>
+          <circle cx="320" cy="70" r="6" fill="#b8863b"/>
+        </svg>
+      </div>
+
+      <h3 class="sub">Key terms</h3>
+      <ul>
+        <li><strong>Hyperplane</strong> — the decision boundary separating classes.</li>
+        <li><strong>Margin</strong> — the gap between the hyperplane and the nearest points of each class. SVM maximizes this.</li>
+        <li><strong>Support vectors</strong> — the closest data points to the hyperplane; they alone determine its position.</li>
+      </ul>
+
+      <h3 class="sub">Kernel trick</h3>
+      <p class="lede">When data isn't linearly separable in its original space, a kernel function projects it into a higher dimension where a straight hyperplane can separate it.</p>
+      <div class="formula">
+        Kernels: Linear · Polynomial · RBF (Gaussian)
+        <span class="desc">RBF is the most common default for non-linear boundaries</span>
+      </div>
+
+      <div class="pair">
+        <div class="card"><h4>Advantages</h4><ul><li>Effective in high-dimensional spaces</li><li>Robust against overfitting, especially with a clear margin</li></ul></div>
+        <div class="card"><h4>Disadvantages</h4><ul><li>Slower to train on large datasets</li><li>Less interpretable, sensitive to kernel/parameter choice</li></ul></div>
+      </div>
+    </section>
+
+    <section class="note" id="s14" data-tab="14" data-title="Naive Bayes">
+      <h2 class="note-title">Naive Bayes</h2>
+      <p>A probabilistic classifier built on Bayes' Theorem. It's called "naive" because it assumes every feature is independent of the others — rarely true in practice, but the model still performs surprisingly well.</p>
+
+      <div class="formula">
+        P(Class | Features) = [P(Features | Class) · P(Class)] / P(Features)
+        <span class="desc">Posterior = (Likelihood · Prior) / Evidence</span>
+      </div>
+
+      <h3 class="sub">Worked intuition — spam detection</h3>
+      <p class="lede">For an email containing the words "free" and "offer", the model compares:</p>
+      <p>
+        <span class="prob-chip">P(Spam) · P("free"|Spam) · P("offer"|Spam)</span>
+        <span class="prob-chip">P(Not Spam) · P("free"|Not Spam) · P("offer"|Not Spam)</span>
+      </p>
+      <p class="lede">Whichever product is larger decides the predicted class.</p>
+
+      <div class="flow">
+        <span class="step">Email Text</span><span class="arrow">→</span>
+        <span class="step">Word Probabilities</span><span class="arrow">→</span>
+        <span class="step">Compare Classes</span><span class="arrow">→</span>
+        <span class="step">Spam / Not Spam</span>
+      </div>
+
+      <h3 class="sub">Common variants</h3>
+      <div class="pair">
+        <div class="card"><h4>Gaussian NB</h4><p class="lede">For continuous features, assumed normally distributed.</p></div>
+        <div class="card"><h4>Multinomial NB</h4><p class="lede">For discrete counts — classic choice for text/spam classification.</p></div>
+      </div>
+
+      <div class="pair">
+        <div class="card"><h4>Advantages</h4><ul><li>Fast to train and predict</li><li>Works well with high-dimensional data (e.g. text)</li><li>Needs relatively little training data</li></ul></div>
+        <div class="card"><h4>Disadvantages</h4><ul><li>Independence assumption is rarely realistic</li><li>Can be outperformed by models that capture feature interactions</li></ul></div>
+      </div>
+    </section>
+
+    <section class="note" id="s15" data-tab="15" data-title="Fit & Bias-Variance">
       <h2 class="note-title">Overfitting, Underfitting &amp; Bias–Variance</h2>
 
       <h3 class="sub">Overfitting</h3>
@@ -661,7 +758,7 @@
       </table>
     </section>
 
-    <section class="note" id="s14" data-tab="14" data-title="Quick Revision">
+    <section class="note" id="s16" data-tab="16" data-title="Quick Revision">
       <h2 class="note-title">Quick Revision Table</h2>
       <table>
         <tr><th>Algorithm</th><th>Learning Type</th><th>Problem Type</th><th>Output</th></tr>
@@ -670,6 +767,8 @@
         <tr><td>Decision Tree</td><td>Supervised</td><td>Regression &amp; Classification</td><td>Class / Value</td></tr>
         <tr><td>Random Forest</td><td>Supervised</td><td>Regression &amp; Classification</td><td>Class / Value</td></tr>
         <tr><td>KNN</td><td>Supervised</td><td>Classification (+ regression variant)</td><td>Class</td></tr>
+        <tr><td>SVM</td><td>Supervised</td><td>Classification (+ regression variant)</td><td>Class</td></tr>
+        <tr><td>Naive Bayes</td><td>Supervised</td><td>Classification</td><td>Class</td></tr>
       </table>
 
       <footer class="page-end">Machine Learning Field Notes · compiled reference for study &amp; revision</footer>
