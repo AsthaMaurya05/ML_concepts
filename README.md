@@ -10,6 +10,7 @@ This repository contains simple machine learning examples in Python.
 - `decision_tree.py` - decision tree classification example
 - `random_forest.py` - random forest classification example
 - `knn.py` - k-nearest neighbors example
+- - `naive_bayes_classifiers.py` - naive bayes classifiers example
 
 ## machine learning notes
  link - https://asthamaurya05.github.io/ML_concepts/
