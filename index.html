@@ -333,6 +333,15 @@
     margin: 14px 0;
   }
 
+  /* k-means cluster diagram */
+  .kmeans-diagram{
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin: 16px 0;
+  }
+
   footer.page-end{
     margin-top: 40px;
     padding-top: 24px;
@@ -381,7 +390,7 @@
 <div class="shell">
   <aside class="sidebar">
     <p class="brand"><em>ML</em> Field Notes</p>
-    <p class="brand-sub">16 entries · study reference</p>
+    <p class="brand-sub">17 entries · study reference</p>
     <button class="mobile-toggle" onclick="document.querySelector('nav.toc').classList.toggle('open')">☰ Contents</button>
     <ul class="toc" style="list-style:none; padding:0;" id="toc"></ul>
     <div class="sidebar-foot">
@@ -393,7 +402,7 @@
     <header class="hero">
       <p class="kicker">Notebook · Machine Learning</p>
       <h1>Patterns learned from data, not written as rules.</h1>
-      <p>A working reference covering the supervised/unsupervised split, the standard ML pipeline, error metrics, and the core algorithms — Linear &amp; Logistic Regression, Decision Trees, Random Forest, KNN, SVM, and Naive Bayes — plus overfitting and the bias–variance tradeoff.</p>
+      <p>A working reference covering the supervised/unsupervised split, the standard ML pipeline, error metrics, and the core algorithms — Linear &amp; Logistic Regression, Decision Trees, Random Forest, KNN, SVM, Naive Bayes, and K-Means — plus overfitting and the bias–variance tradeoff.</p>
     </header>
 
     <section class="note" id="s01" data-tab="01" data-title="What is ML?">
@@ -727,7 +736,65 @@
       </div>
     </section>
 
-    <section class="note" id="s15" data-tab="15" data-title="Fit & Bias-Variance">
+    <section class="note" id="s15" data-tab="15" data-title="K-Means Clustering">
+      <h2 class="note-title">K-Means Clustering</h2>
+      <p>An <strong>unsupervised</strong> algorithm — no labels involved. It groups data points into <strong>K</strong> clusters based purely on similarity (distance), so points inside the same cluster are close together and different clusters are far apart.</p>
+
+      <div class="kmeans-diagram">
+        <svg viewBox="0 0 400 200" width="100%" height="180" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="70" cy="70" r="5" fill="#3f6c51"/>
+          <circle cx="95" cy="55" r="5" fill="#3f6c51"/>
+          <circle cx="60" cy="100" r="5" fill="#3f6c51"/>
+          <circle cx="100" cy="95" r="5" fill="#3f6c51"/>
+          <circle cx="82" cy="78" r="7" fill="none" stroke="#3f6c51" stroke-width="2"/>
+          <circle cx="220" cy="60" r="5" fill="#b8863b"/>
+          <circle cx="250" cy="45" r="5" fill="#b8863b"/>
+          <circle cx="235" cy="90" r="5" fill="#b8863b"/>
+          <circle cx="260" cy="75" r="5" fill="#b8863b"/>
+          <circle cx="241" cy="67" r="7" fill="none" stroke="#b8863b" stroke-width="2"/>
+          <circle cx="180" cy="150" r="5" fill="#7a8c84"/>
+          <circle cx="210" cy="165" r="5" fill="#7a8c84"/>
+          <circle cx="195" cy="130" r="5" fill="#7a8c84"/>
+          <circle cx="225" cy="140" r="5" fill="#7a8c84"/>
+          <circle cx="202" cy="146" r="7" fill="none" stroke="#7a8c84" stroke-width="2"/>
+        </svg>
+        <p class="lede" style="margin-top:8px; font-size:0.8rem;">Rings mark the three cluster centroids; points are assigned to whichever centroid is nearest.</p>
+      </div>
+
+      <h3 class="sub">Key terms</h3>
+      <ul>
+        <li><strong>K</strong> — the number of clusters to form, chosen upfront.</li>
+        <li><strong>Centroid</strong> — the mean position of all points currently assigned to a cluster.</li>
+        <li><strong>Inertia (WCSS)</strong> — within-cluster sum of squares; how tightly packed each cluster is. Lower is better.</li>
+      </ul>
+
+      <div class="formula">
+        Distance(point, centroid) = √Σ (xᵢ − cᵢ)²
+        <span class="desc">Same Euclidean distance idea used in KNN, applied here to centroids instead of neighbors</span>
+      </div>
+
+      <h3 class="sub">Algorithm, step by step</h3>
+      <div class="flow">
+        <span class="step">Pick K</span><span class="arrow">→</span>
+        <span class="step">Init. Centroids</span><span class="arrow">→</span>
+        <span class="step">Assign Points</span><span class="arrow">→</span>
+        <span class="step">Recompute Centroids</span><span class="arrow">→</span>
+        <span class="step">Repeat until Stable</span>
+      </div>
+      <p class="lede">Steps 3 and 4 repeat until centroids stop moving (convergence) or a maximum number of iterations is reached.</p>
+
+      <h3 class="sub">Choosing K — the Elbow Method</h3>
+      <p class="lede">Plot inertia against different values of K. Inertia keeps dropping as K increases, but the rate of improvement slows sharply at some point — the "elbow" — which is a good candidate for K.</p>
+
+      <div class="pair">
+        <div class="card"><h4>Advantages</h4><ul><li>Simple and fast on large datasets</li><li>Easy to interpret and implement</li></ul></div>
+        <div class="card"><h4>Disadvantages</h4><ul><li>Must choose K in advance</li><li>Sensitive to initial centroid placement</li><li>Assumes roughly round, similarly-sized clusters</li><li>Sensitive to outliers</li></ul></div>
+      </div>
+
+      <div class="callout">K-Means is the go-to baseline for clustering. When clusters aren't round or K isn't obvious, DBSCAN or Hierarchical Clustering are the usual next options.</div>
+    </section>
+
+    <section class="note" id="s16" data-tab="16" data-title="Fit & Bias-Variance">
       <h2 class="note-title">Overfitting, Underfitting &amp; Bias–Variance</h2>
 
       <h3 class="sub">Overfitting</h3>
@@ -758,7 +825,7 @@
       </table>
     </section>
 
-    <section class="note" id="s16" data-tab="16" data-title="Quick Revision">
+    <section class="note" id="s17" data-tab="17" data-title="Quick Revision">
       <h2 class="note-title">Quick Revision Table</h2>
       <table>
         <tr><th>Algorithm</th><th>Learning Type</th><th>Problem Type</th><th>Output</th></tr>
@@ -769,6 +836,7 @@
         <tr><td>KNN</td><td>Supervised</td><td>Classification (+ regression variant)</td><td>Class</td></tr>
         <tr><td>SVM</td><td>Supervised</td><td>Classification (+ regression variant)</td><td>Class</td></tr>
         <tr><td>Naive Bayes</td><td>Supervised</td><td>Classification</td><td>Class</td></tr>
+        <tr><td>K-Means</td><td>Unsupervised</td><td>Clustering</td><td>Cluster label</td></tr>
       </table>
 
       <footer class="page-end">Machine Learning Field Notes · compiled reference for study &amp; revision</footer>
