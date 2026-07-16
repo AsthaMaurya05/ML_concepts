@@ -12,7 +12,7 @@ This repository contains simple machine learning examples in Python.
 - `knn.py` - k-nearest neighbors example
 - `naive_bayes_classifiers.py` - naive bayes classifiers example
 - `svm.py` - support vector machine example
-- - `kmeans.py` - k-means clustering
+- `kmeans.py` - k-means clustering
 
 ## machine learning notes
  link - https://asthamaurya05.github.io/ML_concepts/
